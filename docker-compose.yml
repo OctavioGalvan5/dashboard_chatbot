@@ -5,7 +5,7 @@ services:
     build: .
     container_name: conversations-dashboard
     ports:
-      - "5000:5000"
+      - "5002:5002"
     environment:
       # Usar el nombre del contenedor de Supabase DB (misma red Docker)
       - POSTGRES_HOST=caja-de-abogados-de-salta-supabase-h2wcad-supabase-db
