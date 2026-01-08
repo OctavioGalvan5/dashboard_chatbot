@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Conversaciones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <h1>📊 Dashboard de Conversaciones</h1>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.total_sessions }}</div>
+                    <div class="stat-label">Sesiones</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.total_messages }}</div>
+                    <div class="stat-label">Mensajes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.human_messages }}</div>
+                    <div class="stat-label">Humanos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.ai_messages }}</div>
+                    <div class="stat-label">IA</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Buscar por número...">
+                </div>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="human">👤 Humanos</button>
+                <button class="filter-btn" data-filter="ai">🤖 IA</button>
+            </div>
+            <div class="sessions-list" id="sessions-list">
+                {% for session in sessions %}
+                <div class="session-item" data-session="{{ session.session_id }}" onclick="selectSession('{{ session.session_id }}')">
+                    <div class="session-phone">{{ session.session_id }}</div>
+                    <div class="session-stats">
+                        <span>📨 {{ session.total_messages }}</span>
+                        <span>👤 {{ session.human_messages }}</span>
+                        <span>🤖 {{ session.ai_messages }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <div class="content-title" id="content-title">Selecciona una conversación</div>
+                <div class="content-filters">
+                    <input type="text" id="content-search" placeholder="🔍 Buscar en mensajes...">
+                </div>
+            </div>
+            <div class="chat-container" id="chat-container">
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <div class="empty-state-text">Selecciona una conversación del panel izquierdo</div>
+                </div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

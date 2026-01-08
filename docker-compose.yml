@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build: .
+    container_name: conversations-dashboard
+    ports:
+      - "5000:5000"
+    environment:
+      # Usar el nombre del contenedor de Supabase DB (misma red Docker)
+      - POSTGRES_HOST=caja-de-abogados-de-salta-supabase-h2wcad-supabase-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=cqmafpecud2emlhyrtgd102gjvbneyod
+      - POSTGRES_DATABASE=postgres
+    networks:
+      - supabase-network
+    restart: unless-stopped
+
+networks:
+  supabase-network:
+    external: true
+    name: caja-de-abogados-de-salta-supabase-h2wcad-supabase_default
