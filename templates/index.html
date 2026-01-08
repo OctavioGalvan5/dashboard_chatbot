@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Conversaciones</title>
+    <title>Dashboard de Conversaciones - Chatbot</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="dashboard">
         <!-- Header -->
@@ -16,23 +19,45 @@
             <h1>📊 Dashboard de Conversaciones</h1>
             <div class="stats-bar">
                 <div class="stat-item">
-                    <div class="stat-value">{{ stats.total_sessions }}</div>
+                    <div class="stat-value" id="stat-sessions">{{ stats.total_sessions or 0 }}</div>
                     <div class="stat-label">Sesiones</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{{ stats.total_messages }}</div>
+                    <div class="stat-value" id="stat-messages">{{ stats.total_messages or 0 }}</div>
                     <div class="stat-label">Mensajes</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{{ stats.human_messages }}</div>
+                    <div class="stat-value" id="stat-human">{{ stats.human_messages or 0 }}</div>
                     <div class="stat-label">Humanos</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{{ stats.ai_messages }}</div>
+                    <div class="stat-value" id="stat-ai">{{ stats.ai_messages or 0 }}</div>
                     <div class="stat-label">IA</div>
                 </div>
             </div>
         </header>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="chart-card">
+                <div class="chart-title">📈 Mensajes por Día (últimos 30 días)</div>
+                <div class="chart-container">
+                    <canvas id="messagesPerDayChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">🕐 Distribución por Hora (Argentina)</div>
+                <div class="chart-container">
+                    <canvas id="messagesPerHourChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">🏆 Top 10 Conversaciones</div>
+                <div class="chart-container">
+                    <canvas id="topSessionsChart"></canvas>
+                </div>
+            </div>
+        </section>
 
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -41,6 +66,21 @@
                     <input type="text" id="search-input" placeholder="Buscar por número...">
                 </div>
             </div>
+
+            <!-- Date Filters -->
+            <div class="date-filters">
+                <label>📅 Filtrar por Fecha (Argentina)</label>
+                <div class="date-row">
+                    <div>
+                        <input type="date" id="date-from" title="Desde">
+                    </div>
+                    <div>
+                        <input type="date" id="date-to" title="Hasta">
+                    </div>
+                </div>
+                <button class="clear-dates-btn" onclick="clearDateFilters()">✕ Limpiar fechas</button>
+            </div>
+
             <div class="filters">
                 <button class="filter-btn active" data-filter="all">Todos</button>
                 <button class="filter-btn" data-filter="human">👤 Humanos</button>
@@ -48,13 +88,18 @@
             </div>
             <div class="sessions-list" id="sessions-list">
                 {% for session in sessions %}
-                <div class="session-item" data-session="{{ session.session_id }}" onclick="selectSession('{{ session.session_id }}')">
+                <div class="session-item" data-session="{{ session.session_id }}"
+                    onclick="selectSession('{{ session.session_id }}')">
                     <div class="session-phone">{{ session.session_id }}</div>
                     <div class="session-stats">
                         <span>📨 {{ session.total_messages }}</span>
                         <span>👤 {{ session.human_messages }}</span>
                         <span>🤖 {{ session.ai_messages }}</span>
                     </div>
+                    {% if session.last_message %}
+                    <div class="session-date">Último: {{ session.last_message.strftime('%d/%m/%Y %H:%M') if
+                        session.last_message else '' }}</div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -80,4 +125,5 @@
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
+
 </html>
